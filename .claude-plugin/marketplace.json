@@ -12,10 +12,10 @@
     },
     {
       "name": "trimmer",
-      "description": "Token budget guardian. Prevents context overflow by monitoring and trimming conversation tokens.",
+      "description": "Token guard hook that blocks oversized prompts and offers trimmed JSON payloads.",
       "source": "github:PJuniszewski/claude-trimmer",
-      "recommended_version": "v0.1.0",
-      "tags": ["tokens", "context", "optimization"],
+      "recommended_version": "v1.0.0",
+      "tags": ["tokens", "context", "hook", "guard"],
       "requires_env": ["ANTHROPIC_API_KEY", "TOKEN_GUARD_MODEL"]
     }
   ]

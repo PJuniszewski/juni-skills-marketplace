@@ -7,7 +7,7 @@ A curated marketplace of Claude Code plugins for professional development workfl
 | Plugin | Description | Version |
 |--------|-------------|---------|
 | **cook** | Feature development with guardrails. Plan, Review, Code, Ship. | v1.0.0 |
-| **trimmer** | Token budget guardian. Prevents context overflow. | v0.1.0 |
+| **trimmer** | Token guard hook that blocks oversized prompts. | v1.0.0 |
 
 ---
 
@@ -162,7 +162,7 @@ v1.0.0  - Stable release
 
 ```bash
 # Install specific version
-claude /plugin install juni-tools:trimmer@v0.1.0
+claude /plugin install juni-tools:trimmer@v1.0.0
 
 # Install latest
 claude /plugin install juni-tools:trimmer
