@@ -7,7 +7,7 @@
       "name": "cook",
       "description": "Feature development with guardrails. Enforces Plan, Review, Code, Ship workflow with multi-phase governance.",
       "source": "github:PJuniszewski/claude-cook",
-      "recommended_version": "v1.0.0",
+      "recommended_version": "v1.0.1",
       "tags": ["workflow", "governance", "feature-development"]
     },
     {
