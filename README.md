@@ -7,7 +7,7 @@ A curated marketplace of Claude Code plugins for professional development workfl
 | Plugin | Description | Version |
 |--------|-------------|---------|
 | **cook** | Feature development with guardrails. Plan, Review, Code, Ship. | v1.0.2 |
-| **trimmer** | Token guard hook that blocks oversized prompts. | v1.0.0-alpha |
+| **context-guard** | LLM Epistemic Safety Layer - prevents hallucinations on incomplete data. | v1.0.0-alpha |
 
 ---
 
@@ -29,23 +29,23 @@ claude /plugin install juni-tools:cook
 
 **Install all plugins:**
 ```bash
-claude /plugin install juni-tools:cook juni-tools:trimmer
+claude /plugin install juni-tools:cook juni-tools:context-guard
 ```
 
 ### Step 3: Enable Plugin(s)
 
 ```bash
 claude /plugin enable cook
-claude /plugin enable trimmer
+claude /plugin enable context-guard
 ```
 
 ---
 
 ## Configuration
 
-### trimmer
+### context-guard
 
-The trimmer plugin requires two environment variables:
+The context-guard plugin requires two environment variables:
 
 ```bash
 export ANTHROPIC_API_KEY="sk-ant-..."
@@ -75,14 +75,14 @@ The cook plugin works out of the box. Optional configuration:
 
 ## Installation Examples
 
-### Example 1: Install Only Trimmer
+### Example 1: Install Only Context Guard
 
 ```bash
 # Add marketplace (run /plugin, select "Add Marketplace", enter: PJuniszewski/juni-tools-marketplace)
 
-# Install and enable trimmer
-claude /plugin install juni-tools:trimmer
-claude /plugin enable trimmer
+# Install and enable context-guard
+claude /plugin install juni-tools:context-guard
+claude /plugin enable context-guard
 
 # Configure environment
 export ANTHROPIC_API_KEY="sk-ant-..."
@@ -95,12 +95,12 @@ export TOKEN_GUARD_MODEL="claude-sonnet-4-20250514"
 # Add marketplace (run /plugin, select "Add Marketplace", enter: PJuniszewski/juni-tools-marketplace)
 
 # Install both plugins
-claude /plugin install juni-tools:cook juni-tools:trimmer
+claude /plugin install juni-tools:cook juni-tools:context-guard
 
 # Enable both plugins
-claude /plugin enable cook trimmer
+claude /plugin enable cook context-guard
 
-# Configure trimmer environment
+# Configure context-guard environment
 export ANTHROPIC_API_KEY="sk-ant-..."
 export TOKEN_GUARD_MODEL="claude-sonnet-4-20250514"
 ```
@@ -117,7 +117,7 @@ For teams, you can pre-configure plugins in your project's `.claude/settings.jso
     "PJuniszewski/juni-tools-marketplace"
   ],
   "enabledPlugins": [
-    "juni-tools:trimmer",
+    "juni-tools:context-guard",
     "juni-tools:cook"
   ]
 }
@@ -127,7 +127,7 @@ When team members clone the project and run Claude Code, the marketplace and plu
 
 ### Per-Plugin Example
 
-Enable only trimmer for a project:
+Enable only context-guard for a project:
 
 ```json
 {
@@ -135,7 +135,7 @@ Enable only trimmer for a project:
     "PJuniszewski/juni-tools-marketplace"
   ],
   "enabledPlugins": [
-    "juni-tools:trimmer"
+    "juni-tools:context-guard"
   ]
 }
 ```
@@ -161,10 +161,10 @@ v1.0.0  - Stable release
 
 ```bash
 # Install specific version
-claude /plugin install juni-tools:trimmer@v1.0.0
+claude /plugin install juni-tools:context-guard@v1.0.0
 
 # Install latest
-claude /plugin install juni-tools:trimmer
+claude /plugin install juni-tools:context-guard
 ```
 
 ### Marketplace Repository
@@ -180,7 +180,7 @@ When releasing a new plugin version:
 ### 1. Tag Plugin Release
 
 ```bash
-cd claude-cook  # or claude-trimmer
+cd claude-cook  # or claude-trimmer (context-guard)
 git tag v1.0.2
 git push origin v1.0.2
 ```
@@ -223,7 +223,7 @@ Document changes in each plugin's CHANGELOG.md.
 |------------|-----|
 | Marketplace | [PJuniszewski/juni-tools-marketplace](https://github.com/PJuniszewski/juni-tools-marketplace) |
 | cook | [PJuniszewski/claude-cook](https://github.com/PJuniszewski/claude-cook) |
-| trimmer | [PJuniszewski/claude-trimmer](https://github.com/PJuniszewski/claude-trimmer) |
+| context-guard | [PJuniszewski/claude-trimmer](https://github.com/PJuniszewski/claude-trimmer) |
 
 ---
 

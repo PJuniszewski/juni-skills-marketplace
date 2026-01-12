@@ -16,13 +16,13 @@
       "tags": ["workflow", "governance", "feature-development"]
     },
     {
-      "name": "trimmer",
-      "description": "Token guard hook that blocks oversized prompts and offers trimmed JSON payloads.",
+      "name": "context-guard",
+      "description": "LLM Epistemic Safety Layer - context integrity enforcement with sampling-aware guardrails. Prevents confident hallucinations on incomplete data.",
       "source": {
         "source": "url",
         "url": "https://github.com/PJuniszewski/claude-trimmer.git"
       },
-      "tags": ["tokens", "context", "hook", "guard"]
+      "tags": ["tokens", "context", "hook", "guard", "epistemic", "safety", "forensics"]
     }
   ]
 }
