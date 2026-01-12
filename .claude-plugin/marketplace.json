@@ -20,7 +20,7 @@
       "description": "LLM Epistemic Safety Layer - context integrity enforcement with sampling-aware guardrails. Prevents confident hallucinations on incomplete data.",
       "source": {
         "source": "url",
-        "url": "https://github.com/PJuniszewski/claude-trimmer.git"
+        "url": "https://github.com/PJuniszewski/context-guard.git"
       },
       "tags": ["tokens", "context", "hook", "guard", "epistemic", "safety", "forensics"]
     }
