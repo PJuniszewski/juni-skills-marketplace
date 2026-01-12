@@ -16,7 +16,8 @@ A curated marketplace of Claude Code plugins for professional development workfl
 ### Step 1: Add the Marketplace
 
 ```bash
-claude /marketplace add github:PJuniszewski/juni-tools-marketplace
+claude /plugin
+# Then select "Add Marketplace" and enter: PJuniszewski/juni-tools-marketplace
 ```
 
 ### Step 2: Install Plugin(s)
@@ -77,8 +78,7 @@ The cook plugin works out of the box. Optional configuration:
 ### Example 1: Install Only Trimmer
 
 ```bash
-# Add marketplace
-claude /marketplace add github:PJuniszewski/juni-tools-marketplace
+# Add marketplace (run /plugin, select "Add Marketplace", enter: PJuniszewski/juni-tools-marketplace)
 
 # Install and enable trimmer
 claude /plugin install juni-tools:trimmer
@@ -92,8 +92,7 @@ export TOKEN_GUARD_MODEL="claude-sonnet-4-20250514"
 ### Example 2: Install Both Plugins
 
 ```bash
-# Add marketplace
-claude /marketplace add github:PJuniszewski/juni-tools-marketplace
+# Add marketplace (run /plugin, select "Add Marketplace", enter: PJuniszewski/juni-tools-marketplace)
 
 # Install both plugins
 claude /plugin install juni-tools:cook juni-tools:trimmer
@@ -115,7 +114,7 @@ For teams, you can pre-configure plugins in your project's `.claude/settings.jso
 ```json
 {
   "extraKnownMarketplaces": [
-    "github:PJuniszewski/juni-tools-marketplace"
+    "PJuniszewski/juni-tools-marketplace"
   ],
   "enabledPlugins": [
     "juni-tools:trimmer",
@@ -133,7 +132,7 @@ Enable only trimmer for a project:
 ```json
 {
   "extraKnownMarketplaces": [
-    "github:PJuniszewski/juni-tools-marketplace"
+    "PJuniszewski/juni-tools-marketplace"
   ],
   "enabledPlugins": [
     "juni-tools:trimmer"
@@ -186,23 +185,15 @@ git tag v1.0.2
 git push origin v1.0.2
 ```
 
-### 2. Update Marketplace (if needed)
+### 2. Update README Version Table
 
-Update `recommended_version` in `.claude-plugin/marketplace.json`:
-
-```json
-{
-  "name": "cook",
-  "recommended_version": "v1.0.2",
-  ...
-}
-```
+Update the version in this README's Available Plugins table to reflect the new release.
 
 Commit and push:
 
 ```bash
 cd juni-tools-marketplace
-git add .claude-plugin/marketplace.json
+git add README.md
 git commit -m "Update cook to v1.0.2"
 git push origin main
 ```
@@ -212,8 +203,7 @@ git push origin main
 Test the installation flow:
 
 ```bash
-# Fresh install test
-claude /marketplace add github:PJuniszewski/juni-tools-marketplace
+# Fresh install test (run /plugin, select "Add Marketplace", enter: PJuniszewski/juni-tools-marketplace)
 claude /plugin install juni-tools:cook@v1.0.2
 claude /plugin enable cook
 

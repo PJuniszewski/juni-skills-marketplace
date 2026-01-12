@@ -2,21 +2,27 @@
   "name": "juni-tools",
   "description": "Curated Claude Code plugins for professional development workflows",
   "version": "1.0.0",
+  "owner": {
+    "name": "PJuniszewski"
+  },
   "plugins": [
     {
       "name": "cook",
       "description": "Feature development with guardrails. Enforces Plan, Review, Code, Ship workflow with multi-phase governance.",
-      "source": "github:PJuniszewski/claude-cook",
-      "recommended_version": "v1.0.2",
+      "source": {
+        "type": "github",
+        "url": "PJuniszewski/claude-cook"
+      },
       "tags": ["workflow", "governance", "feature-development"]
     },
     {
       "name": "trimmer",
       "description": "Token guard hook that blocks oversized prompts and offers trimmed JSON payloads.",
-      "source": "github:PJuniszewski/claude-trimmer",
-      "recommended_version": "v1.0.0-alpha",
-      "tags": ["tokens", "context", "hook", "guard"],
-      "requires_env": ["ANTHROPIC_API_KEY", "TOKEN_GUARD_MODEL"]
+      "source": {
+        "type": "github",
+        "url": "PJuniszewski/claude-trimmer"
+      },
+      "tags": ["tokens", "context", "hook", "guard"]
     }
   ]
 }
