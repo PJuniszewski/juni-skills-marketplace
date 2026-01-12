@@ -9,13 +9,19 @@
     {
       "name": "cook",
       "description": "Feature development with guardrails. Enforces Plan, Review, Code, Ship workflow with multi-phase governance.",
-      "source": "PJuniszewski/claude-cook",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/PJuniszewski/claude-cook.git"
+      },
       "tags": ["workflow", "governance", "feature-development"]
     },
     {
       "name": "trimmer",
       "description": "Token guard hook that blocks oversized prompts and offers trimmed JSON payloads.",
-      "source": "PJuniszewski/claude-trimmer",
+      "source": {
+        "source": "url",
+        "url": "https://github.com/PJuniszewski/claude-trimmer.git"
+      },
       "tags": ["tokens", "context", "hook", "guard"]
     }
   ]
