@@ -180,7 +180,7 @@ When releasing a new plugin version:
 ### 1. Tag Plugin Release
 
 ```bash
-cd claude-cook  # or claude-trimmer (context-guard)
+cd claude-cook  # or context-guard
 git tag v1.0.2
 git push origin v1.0.2
 ```
@@ -223,7 +223,7 @@ Document changes in each plugin's CHANGELOG.md.
 |------------|-----|
 | Marketplace | [PJuniszewski/juni-tools-marketplace](https://github.com/PJuniszewski/juni-tools-marketplace) |
 | cook | [PJuniszewski/claude-cook](https://github.com/PJuniszewski/claude-cook) |
-| context-guard | [PJuniszewski/claude-trimmer](https://github.com/PJuniszewski/claude-trimmer) |
+| context-guard | [PJuniszewski/context-guard](https://github.com/PJuniszewski/context-guard) |
 
 ---
 
