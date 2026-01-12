@@ -6,8 +6,8 @@ A curated marketplace of Claude Code plugins for professional development workfl
 
 | Plugin | Description | Version |
 |--------|-------------|---------|
-| **cook** | Feature development with guardrails. Plan, Review, Code, Ship. | v1.0.1 |
-| **trimmer** | Token guard hook that blocks oversized prompts. | v1.0.0 |
+| **cook** | Feature development with guardrails. Plan, Review, Code, Ship. | v1.0.2 |
+| **trimmer** | Token guard hook that blocks oversized prompts. | v1.0.0-alpha |
 
 ---
 
@@ -182,8 +182,8 @@ When releasing a new plugin version:
 
 ```bash
 cd claude-cook  # or claude-trimmer
-git tag v1.0.1
-git push origin v1.0.1
+git tag v1.0.2
+git push origin v1.0.2
 ```
 
 ### 2. Update Marketplace (if needed)
@@ -193,7 +193,7 @@ Update `recommended_version` in `.claude-plugin/marketplace.json`:
 ```json
 {
   "name": "cook",
-  "recommended_version": "v1.0.1",
+  "recommended_version": "v1.0.2",
   ...
 }
 ```
@@ -203,7 +203,7 @@ Commit and push:
 ```bash
 cd juni-tools-marketplace
 git add .claude-plugin/marketplace.json
-git commit -m "Update cook to v1.0.1"
+git commit -m "Update cook to v1.0.2"
 git push origin main
 ```
 
@@ -214,7 +214,7 @@ Test the installation flow:
 ```bash
 # Fresh install test
 claude /marketplace add github:PJuniszewski/juni-tools-marketplace
-claude /plugin install juni-tools:cook@v1.0.1
+claude /plugin install juni-tools:cook@v1.0.2
 claude /plugin enable cook
 
 # Verify plugin loads

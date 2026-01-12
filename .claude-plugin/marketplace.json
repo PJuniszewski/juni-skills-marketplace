@@ -14,7 +14,7 @@
       "name": "trimmer",
       "description": "Token guard hook that blocks oversized prompts and offers trimmed JSON payloads.",
       "source": "github:PJuniszewski/claude-trimmer",
-      "recommended_version": "v1.0.0",
+      "recommended_version": "v1.0.0-alpha",
       "tags": ["tokens", "context", "hook", "guard"],
       "requires_env": ["ANTHROPIC_API_KEY", "TOKEN_GUARD_MODEL"]
     }
