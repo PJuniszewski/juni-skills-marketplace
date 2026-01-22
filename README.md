@@ -186,7 +186,7 @@ When releasing a new plugin version:
 ### 1. Tag Plugin Release
 
 ```bash
-cd claude-cook  # or context-guard
+cd cook  # or context-guard
 git tag v1.5.3
 git push origin v1.5.3
 ```
@@ -228,7 +228,7 @@ Document changes in each plugin's CHANGELOG.md.
 | Repository | URL |
 |------------|-----|
 | Marketplace | [PJuniszewski/juni-tools-marketplace](https://github.com/PJuniszewski/juni-tools-marketplace) |
-| cook | [PJuniszewski/claude-cook](https://github.com/PJuniszewski/claude-cook) |
+| cook | [PJuniszewski/cook](https://github.com/PJuniszewski/cook) |
 | context-guard | [PJuniszewski/context-guard](https://github.com/PJuniszewski/context-guard) |
 
 ---
