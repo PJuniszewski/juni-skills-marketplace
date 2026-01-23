@@ -24,11 +24,11 @@ Before submitting, ensure your plugin meets these requirements:
 - [ ] No duplicate functionality with existing plugins
 - [ ] No binaries or large generated files committed
 
-### Security
+### Security (CI Enforced)
 
-- [ ] No hardcoded credentials or secrets
+- [ ] No hardcoded credentials or secrets (API keys, tokens, passwords)
 - [ ] No obfuscated code
-- [ ] No hidden telemetry (must be disclosed if present)
+- [ ] No telemetry or network code (banned - plugins must not phone home)
 - [ ] No data exfiltration to external servers
 
 ## Submission Process
@@ -84,6 +84,8 @@ The validator will:
 - Check for required files (manifest, README, LICENSE)
 - Verify content directories exist
 - Detect binary files and oversized repos
+- **Scan for hardcoded secrets** (API keys, tokens, passwords)
+- **Scan for network/telemetry code** (requests, fetch, urllib - banned)
 - Report any issues
 
 Fix any errors before proceeding. Warnings are informational but should be reviewed.
@@ -108,21 +110,28 @@ A maintainer will review your submission. Be prepared to:
 - Make changes if issues are found
 - Provide additional documentation if needed
 
-## Security Considerations
+## Security Policy
 
-**Your plugin will execute with the user's full permissions.**
+**Plugins execute with the user's full permissions.** This marketplace enforces strict security controls.
 
-This means your plugin can:
-- Access the filesystem
-- Run shell commands
-- Read environment variables
-- Make network requests
+### Banned
 
-**You are responsible for:**
-- Ensuring your plugin does not contain malicious code
-- Disclosing any telemetry or data collection
-- Responding to security reports about your plugin
-- Keeping your plugin updated and secure
+- **Network code**: No `requests`, `urllib`, `fetch`, `axios`, `http.client`, `aiohttp`, `httpx`
+- **Telemetry**: No analytics, tracking, or "phoning home"
+- **Secrets**: No hardcoded API keys, tokens, passwords, or private keys
+- **Data exfiltration**: No sending user data to external servers
+
+### Why No Network Code?
+
+Plugins should operate locally. If your plugin needs external data:
+1. Have the user provide it via environment variables or config files
+2. Use Claude Code's built-in tools (WebFetch, etc.) which the user can audit
+
+### Enforcement
+
+- CI automatically scans plugin content directories (`commands/`, `hooks/`, `agents/`, `skills/`)
+- Secrets detection catches: AWS keys, GitHub tokens, passwords, private keys, bearer tokens
+- Network detection catches: HTTP libraries, fetch calls, WebSocket, analytics URLs
 
 **Malicious plugins will be removed and authors banned.**
 

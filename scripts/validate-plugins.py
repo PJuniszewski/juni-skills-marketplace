@@ -56,6 +56,63 @@ SEMVER_RE = re.compile(r"^\d+\.\d+\.\d+(-[0-9A-Za-z\.-]+)?(\+[0-9A-Za-z\.-]+)?$"
 
 GITHUB_REPO_RE = re.compile(r"^https://github\.com/[^/]+/[^/]+(\.git)?$")
 
+# =========================
+# SECURITY PATTERNS
+# =========================
+
+# Secrets detection patterns (hardcoded credentials)
+SECRET_PATTERNS = [
+    # AWS
+    (r"AKIA[0-9A-Z]{16}", "AWS Access Key ID"),
+    (r"(?i)aws[_-]?secret[_-]?access[_-]?key\s*[=:]\s*['\"][^'\"]+['\"]", "AWS Secret Key assignment"),
+    # Generic API keys
+    (r"(?i)api[_-]?key\s*[=:]\s*['\"][a-zA-Z0-9_\-]{20,}['\"]", "API key assignment"),
+    (r"(?i)api[_-]?secret\s*[=:]\s*['\"][^'\"]+['\"]", "API secret assignment"),
+    # Tokens
+    (r"(?i)bearer\s+[a-zA-Z0-9_\-\.]+", "Bearer token"),
+    (r"(?i)token\s*[=:]\s*['\"][a-zA-Z0-9_\-]{20,}['\"]", "Token assignment"),
+    (r"ghp_[a-zA-Z0-9]{36}", "GitHub Personal Access Token"),
+    (r"gho_[a-zA-Z0-9]{36}", "GitHub OAuth Token"),
+    (r"github_pat_[a-zA-Z0-9]{22}_[a-zA-Z0-9]{59}", "GitHub Fine-grained PAT"),
+    # Private keys
+    (r"-----BEGIN (?:RSA |DSA |EC |OPENSSH )?PRIVATE KEY-----", "Private key"),
+    # Passwords
+    (r"(?i)password\s*[=:]\s*['\"][^'\"]{8,}['\"]", "Password assignment"),
+    (r"(?i)passwd\s*[=:]\s*['\"][^'\"]+['\"]", "Password assignment"),
+    # Slack/Discord
+    (r"xox[baprs]-[0-9a-zA-Z-]+", "Slack token"),
+    (r"(?i)discord[_-]?(?:token|webhook)\s*[=:]\s*['\"][^'\"]+['\"]", "Discord token/webhook"),
+    # Generic secrets
+    (r"(?i)secret\s*[=:]\s*['\"][a-zA-Z0-9_\-]{16,}['\"]", "Secret assignment"),
+]
+
+# Network/telemetry patterns (BANNED - no phoning home)
+NETWORK_PATTERNS = [
+    # Python
+    (r"^\s*import\s+requests\b", "requests import"),
+    (r"^\s*from\s+requests\s+import", "requests import"),
+    (r"^\s*import\s+urllib\.request", "urllib.request import"),
+    (r"^\s*from\s+urllib\.request\s+import", "urllib.request import"),
+    (r"^\s*import\s+http\.client", "http.client import"),
+    (r"^\s*import\s+aiohttp", "aiohttp import"),
+    (r"^\s*import\s+httpx", "httpx import"),
+    (r"requests\.(get|post|put|delete|patch)\s*\(", "requests HTTP call"),
+    (r"urllib\.request\.(urlopen|Request)", "urllib HTTP call"),
+    # JavaScript/TypeScript
+    (r"\bfetch\s*\(", "fetch() call"),
+    (r"\baxios\s*[\.\(]", "axios call"),
+    (r"new\s+XMLHttpRequest", "XMLHttpRequest"),
+    (r"\.ajax\s*\(", "jQuery ajax call"),
+    # URLs that look like telemetry/analytics
+    (r"https?://[^'\"\s]*(?:analytics|telemetry|tracking|metrics|beacon)[^'\"\s]*", "Analytics/telemetry URL"),
+    # WebSocket (could be used for data exfiltration)
+    (r"\bWebSocket\s*\(", "WebSocket connection"),
+    (r"^\s*import\s+websocket", "websocket import"),
+]
+
+# Files to scan for security issues
+SCANNABLE_EXTENSIONS = {".py", ".js", ".ts", ".sh", ".bash", ".zsh", ".rb", ".go", ".rs"}
+
 
 @dataclass
 class PluginResult:
@@ -236,6 +293,103 @@ def extract_command_names(repo_path: Path) -> Set[str]:
     return cmds
 
 
+def scan_file_for_secrets(file_path: Path, content: str) -> List[Tuple[int, str, str]]:
+    """
+    Scan file content for hardcoded secrets.
+    Returns list of (line_number, pattern_name, matched_text).
+    """
+    findings: List[Tuple[int, str, str]] = []
+    lines = content.split("\n")
+
+    for line_num, line in enumerate(lines, 1):
+        # Skip comments (basic heuristic)
+        stripped = line.strip()
+        if stripped.startswith("#") or stripped.startswith("//") or stripped.startswith("*"):
+            continue
+
+        for pattern, name in SECRET_PATTERNS:
+            if re.search(pattern, line):
+                # Truncate match for display
+                match = re.search(pattern, line)
+                if match:
+                    matched = match.group(0)
+                    # Redact middle of secrets for safety
+                    if len(matched) > 20:
+                        matched = matched[:8] + "..." + matched[-4:]
+                    findings.append((line_num, name, matched))
+
+    return findings
+
+
+def scan_file_for_network(file_path: Path, content: str) -> List[Tuple[int, str, str]]:
+    """
+    Scan file content for network/telemetry code.
+    Returns list of (line_number, pattern_name, matched_text).
+    """
+    findings: List[Tuple[int, str, str]] = []
+    lines = content.split("\n")
+
+    for line_num, line in enumerate(lines, 1):
+        # Skip comments
+        stripped = line.strip()
+        if stripped.startswith("#") or stripped.startswith("//") or stripped.startswith("*"):
+            continue
+
+        for pattern, name in NETWORK_PATTERNS:
+            if re.search(pattern, line):
+                match = re.search(pattern, line)
+                if match:
+                    matched = match.group(0)[:50]  # Truncate long matches
+                    findings.append((line_num, name, matched))
+
+    return findings
+
+
+def security_scan_repo(repo_path: Path, files: List[Path]) -> Tuple[List[str], List[str]]:
+    """
+    Scan repository for security issues: secrets and network/telemetry code.
+    Only scans plugin content directories (commands/, hooks/, agents/, skills/).
+    Development scripts and other files are not scanned.
+    Returns (errors, warnings).
+    """
+    errors: List[str] = []
+    warnings: List[str] = []
+
+    # Only scan files in plugin content directories
+    content_dirs = {"commands", "hooks", "agents", "skills"}
+
+    for f in files:
+        if f.suffix.lower() not in SCANNABLE_EXTENSIONS:
+            continue
+
+        # Check if file is in a content directory
+        try:
+            rel_parts = f.relative_to(repo_path).parts
+            if not rel_parts or rel_parts[0] not in content_dirs:
+                continue  # Skip files outside content directories
+        except ValueError:
+            continue
+
+        try:
+            content = f.read_text(encoding="utf-8", errors="ignore")
+            rel = f.relative_to(repo_path)
+
+            # Check for secrets (HARD FAIL)
+            secret_findings = scan_file_for_secrets(f, content)
+            for line_num, name, matched in secret_findings:
+                errors.append(f"SECURITY: Hardcoded secret in {rel}:{line_num} - {name}")
+
+            # Check for network/telemetry (HARD FAIL - telemetry banned)
+            network_findings = scan_file_for_network(f, content)
+            for line_num, name, matched in network_findings:
+                errors.append(f"SECURITY: Network/telemetry code in {rel}:{line_num} - {name}")
+
+        except Exception as e:
+            warnings.append(f"Could not security scan {f.relative_to(repo_path)}: {e}")
+
+    return errors, warnings
+
+
 def validate_plugin_repo(repo_path: Path) -> Tuple[List[str], List[str], Set[str]]:
     errors: List[str] = []
     warnings: List[str] = []
@@ -312,6 +466,11 @@ def validate_plugin_repo(repo_path: Path) -> Tuple[List[str], List[str], Set[str
     commands = extract_command_names(repo_path)
     if len(commands) == 0:
         warnings.append("No commands detected under commands/ (ok if plugin uses hooks/agents only)")
+
+    # Security scan: secrets and network/telemetry
+    sec_errors, sec_warnings = security_scan_repo(repo_path, files)
+    errors.extend(sec_errors)
+    warnings.extend(sec_warnings)
 
     return errors, warnings, commands
 

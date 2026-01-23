@@ -19,13 +19,14 @@ _Brief description of what this plugin does and why it's useful._
 - [ ] Added entry to `.claude-plugin/marketplace.json` with `"category": "community"`
 - [ ] I have read [CONTRIBUTING.md](../CONTRIBUTING.md)
 
-### Security
+### Security (CI Enforced)
 
-- [ ] No hardcoded credentials or secrets in plugin code
+- [ ] No hardcoded credentials or secrets (API keys, tokens, passwords)
 - [ ] No obfuscated code
-- [ ] No hidden telemetry (or telemetry is disclosed in README)
+- [ ] No telemetry or network code (banned - no `requests`, `fetch`, `urllib`, etc.)
 - [ ] No data exfiltration to external servers
 - [ ] I am the author/maintainer of this plugin repository
+- [ ] I have run `python scripts/validate-plugins.py` locally and it passes
 
 ### Quality
 

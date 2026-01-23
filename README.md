@@ -111,11 +111,19 @@ All plugins are automatically validated via CI:
 | Content | At least one of: `commands/`, `hooks/`, `agents/`, `skills/` |
 | Size limits | No oversized files (2MB/file, 20MB/repo) |
 | No binaries | Blocks `.exe`, `.dll`, `.so`, images, archives |
+| **No secrets** | Scans for API keys, tokens, passwords, private keys |
+| **No network** | Blocks `requests`, `fetch`, `urllib`, telemetry (banned) |
 
 **Run locally:**
 
 ```bash
 python scripts/validate-plugins.py
+```
+
+**Run tests:**
+
+```bash
+python scripts/test_validator.py
 ```
 
 PRs that fail validation cannot be merged.

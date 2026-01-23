@@ -4,7 +4,7 @@ on:
   pull_request:
     paths:
       - ".claude-plugin/marketplace.json"
-      - "scripts/validate-plugins.py"
+      - "scripts/**"
       - ".github/workflows/validate.yml"
   push:
     branches: [ main ]
@@ -21,6 +21,8 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: Run validator tests
+        run: python scripts/test_validator.py
+
       - name: Validate plugins
-        run: |
-          python scripts/validate-plugins.py
+        run: python scripts/validate-plugins.py
