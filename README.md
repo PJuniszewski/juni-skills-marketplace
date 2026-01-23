@@ -2,33 +2,47 @@
   <img src="assets/marketplace.png" alt="juni-skills-marketplace" width="100%">
 </p>
 
-<!-- STATUS -->
+<!-- STATUS & PLATFORM -->
 <p align="center">
   <a href="https://github.com/PJuniszewski/juni-skills-marketplace/actions/workflows/validate.yml"><img src="https://github.com/PJuniszewski/juni-skills-marketplace/actions/workflows/validate.yml/badge.svg" alt="CI"></a>
   <img src="https://img.shields.io/badge/Claude%20Code-Marketplace-black" alt="Claude Code">
 </p>
 
-<!-- WHAT IT IS -->
+<!-- METADATA -->
 <p align="center">
   <img src="https://img.shields.io/badge/Curated-Official%20%2B%20Community-7c3aed" alt="Curated">
   <img src="https://img.shields.io/badge/Plugins-2-ff69b4" alt="Plugins">
   <img src="https://img.shields.io/badge/Version-1.0.0-blue" alt="Version">
 </p>
 
-<!-- TRUST / POLICY -->
+<!-- TRUST & SECURITY -->
 <p align="center">
   <img src="https://img.shields.io/badge/License-MIT-success" alt="License">
-  <img src="https://img.shields.io/badge/CI%20Guarded-Yes-22c55e" alt="CI Guarded">
-  <img src="https://img.shields.io/badge/No%20Binaries-Enforced-22c55e" alt="No Binaries">
+  <img src="https://img.shields.io/badge/Secrets-Hard%20Fail-dc2626" alt="Secrets Hard Fail">
+  <img src="https://img.shields.io/badge/Network-Hard%20Fail-dc2626" alt="Network Hard Fail">
+  <img src="https://img.shields.io/badge/Telemetry-Blocked-dc2626" alt="Telemetry Blocked">
+  <img src="https://img.shields.io/badge/Tests-27-22c55e" alt="Tests">
 </p>
 
 <p align="center">
-  <strong>Curated Claude Code marketplace with CI validation, size limits, and strict plugin hygiene.</strong>
+  <strong>Supply-chain hardened Claude Code marketplace. Secrets scanning, network blocking, zero telemetry.</strong>
 </p>
 
 ---
 
-> **Security Notice:** Plugins execute with your full user permissions (filesystem, shell, environment variables). Official plugins are maintained by [@PJuniszewski](https://github.com/PJuniszewski). Community plugins are third-party contributions — review source code before enabling. This marketplace does NOT guarantee plugin safety.
+> **Security Notice:** Plugins execute with your full user permissions (filesystem, shell, environment variables). Official plugins are maintained by [@PJuniszewski](https://github.com/PJuniszewski). Community plugins are third-party contributions — review source code before enabling.
+
+---
+
+## Security Posture
+
+This marketplace enforces **supply-chain hygiene**:
+
+- **Secrets scanning (HARD FAIL)** — blocks committed credentials (AWS keys, GitHub tokens, private keys, Slack tokens, bearer tokens)
+- **Network/telemetry scanning (HARD FAIL)** — blocks hidden network calls and analytics endpoints
+- **CI validated** — every plugin must pass structural + security checks before merge
+
+Scope: Only plugin content directories are scanned (`commands/`, `hooks/`, `agents/`, `skills/`).
 
 ---
 
