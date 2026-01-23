@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/marketplace.png" alt="juni-skills-marketplace" width="700">
+  <img src="assets/marketplace.png" alt="juni-skills-marketplace" width="100%">
 </p>
 
 <!-- STATUS -->
