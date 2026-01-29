@@ -159,6 +159,27 @@ NETWORK_PATTERNS = NETWORK_CODE_PATTERNS + SHELL_NETWORK_PATTERNS + TELEMETRY_PA
 # Files to scan for security issues
 SCANNABLE_EXTENSIONS = {".py", ".js", ".ts", ".sh", ".bash", ".zsh", ".rb", ".go", ".rs", ".ps1"}
 
+# =========================
+# CVE SCANNING SETTINGS
+# =========================
+
+# CVE severity thresholds by tier
+# CRITICAL/HIGH = error (fail), MEDIUM = warning, LOW = info
+CVE_POLICY = {
+    "curated": {
+        "critical": "error",
+        "high": "error",
+        "medium": "warning",
+        "low": "info",
+    },
+    "community": {
+        "critical": "error",
+        "high": "warning",
+        "medium": "warning",
+        "low": "info",
+    },
+}
+
 
 @dataclass
 class PluginResult:
@@ -205,6 +226,189 @@ def clone_repo(url: str, dest: Path) -> Tuple[bool, str]:
     if code != 0:
         return False, f"Could not clone {url}: {out}"
     return True, ""
+
+
+# =========================
+# CVE SCANNING
+# =========================
+
+def check_tool_available(tool: str) -> bool:
+    """Check if a CLI tool is available."""
+    try:
+        code, _ = run(["which", tool])
+        return code == 0
+    except Exception:
+        return False
+
+
+def scan_python_cves(repo_path: Path, tier: str) -> Tuple[List[str], List[str]]:
+    """Scan Python dependencies for CVEs using pip-audit."""
+    errors: List[str] = []
+    warnings: List[str] = []
+    policy = CVE_POLICY.get(tier, CVE_POLICY["community"])
+
+    req_files = [
+        repo_path / "requirements.txt",
+        repo_path / "requirements-dev.txt",
+    ]
+
+    # Check for pyproject.toml with dependencies
+    pyproject = repo_path / "pyproject.toml"
+
+    found_deps = False
+    for req_file in req_files:
+        if req_file.exists():
+            found_deps = True
+            break
+    if pyproject.exists():
+        try:
+            content = pyproject.read_text(encoding="utf-8")
+            if "dependencies" in content or "[project.optional-dependencies]" in content:
+                found_deps = True
+        except Exception:
+            pass
+
+    if not found_deps:
+        return errors, warnings
+
+    if not check_tool_available("pip-audit"):
+        warnings.append("CVE SCAN: pip-audit not installed, skipping Python CVE scan")
+        return errors, warnings
+
+    # Run pip-audit
+    for req_file in req_files:
+        if not req_file.exists():
+            continue
+
+        code, output = run(
+            ["pip-audit", "-r", str(req_file), "--format", "json", "--progress-spinner", "off"],
+            cwd=repo_path
+        )
+
+        if code != 0 and "No dependencies" not in output:
+            # Try to parse JSON output for vulnerabilities
+            try:
+                import json
+                # pip-audit returns JSON even on failure when vulns found
+                vulns = json.loads(output) if output.startswith("[") else []
+                for vuln in vulns:
+                    pkg = vuln.get("name", "unknown")
+                    version = vuln.get("version", "?")
+                    for v in vuln.get("vulns", []):
+                        vuln_id = v.get("id", "UNKNOWN")
+                        desc = v.get("fix_versions", ["no fix"])
+                        severity = v.get("aliases", [])
+
+                        # Determine severity (pip-audit doesn't always have it)
+                        sev_level = "medium"
+                        if any("CRITICAL" in str(s).upper() for s in severity):
+                            sev_level = "critical"
+                        elif any("HIGH" in str(s).upper() for s in severity):
+                            sev_level = "high"
+
+                        msg = f"CVE: {pkg}=={version} has {vuln_id} (severity: {sev_level})"
+
+                        action = policy.get(sev_level, "warning")
+                        if action == "error":
+                            errors.append(msg)
+                        elif action == "warning":
+                            warnings.append(msg)
+                        # info level is silently ignored
+
+            except json.JSONDecodeError:
+                # Non-JSON output, likely an error message
+                if "No known vulnerabilities" not in output:
+                    warnings.append(f"CVE SCAN: pip-audit returned unexpected output for {req_file.name}")
+
+    return errors, warnings
+
+
+def scan_npm_cves(repo_path: Path, tier: str) -> Tuple[List[str], List[str]]:
+    """Scan npm dependencies for CVEs using npm audit."""
+    errors: List[str] = []
+    warnings: List[str] = []
+    policy = CVE_POLICY.get(tier, CVE_POLICY["community"])
+
+    pkg_json = repo_path / "package.json"
+    if not pkg_json.exists():
+        return errors, warnings
+
+    if not check_tool_available("npm"):
+        warnings.append("CVE SCAN: npm not installed, skipping JavaScript CVE scan")
+        return errors, warnings
+
+    # Install dependencies first (needed for audit)
+    pkg_lock = repo_path / "package-lock.json"
+    if not pkg_lock.exists():
+        # Try to generate lock file
+        run(["npm", "install", "--package-lock-only", "--ignore-scripts"], cwd=repo_path)
+
+    if not pkg_lock.exists():
+        warnings.append("CVE SCAN: Could not generate package-lock.json, skipping npm audit")
+        return errors, warnings
+
+    # Run npm audit
+    code, output = run(["npm", "audit", "--json"], cwd=repo_path)
+
+    if code != 0:
+        try:
+            import json
+            audit_result = json.loads(output)
+            vulns = audit_result.get("vulnerabilities", {})
+
+            for pkg_name, vuln_info in vulns.items():
+                severity = vuln_info.get("severity", "moderate").lower()
+                via = vuln_info.get("via", [])
+
+                # Map npm severity to our levels
+                sev_map = {
+                    "critical": "critical",
+                    "high": "high",
+                    "moderate": "medium",
+                    "low": "low",
+                }
+                sev_level = sev_map.get(severity, "medium")
+
+                # Get CVE IDs if available
+                cve_ids = []
+                for v in via:
+                    if isinstance(v, dict):
+                        if v.get("url"):
+                            cve_ids.append(v.get("url", ""))
+
+                msg = f"CVE: {pkg_name} has {severity} vulnerability"
+                if cve_ids:
+                    msg += f" ({', '.join(cve_ids[:2])})"
+
+                action = policy.get(sev_level, "warning")
+                if action == "error":
+                    errors.append(msg)
+                elif action == "warning":
+                    warnings.append(msg)
+
+        except json.JSONDecodeError:
+            if "found 0 vulnerabilities" not in output.lower():
+                warnings.append("CVE SCAN: npm audit returned unexpected output")
+
+    return errors, warnings
+
+
+def scan_dependencies_for_cves(repo_path: Path, tier: str) -> Tuple[List[str], List[str]]:
+    """Scan all dependencies for known CVEs."""
+    all_errors: List[str] = []
+    all_warnings: List[str] = []
+
+    # Python dependencies
+    py_errors, py_warnings = scan_python_cves(repo_path, tier)
+    all_errors.extend(py_errors)
+    all_warnings.extend(py_warnings)
+
+    # JavaScript/Node dependencies
+    npm_errors, npm_warnings = scan_npm_cves(repo_path, tier)
+    all_errors.extend(npm_errors)
+    all_warnings.extend(npm_warnings)
+
+    return all_errors, all_warnings
 
 
 def exists_any(repo_path: Path, paths: List[str]) -> Optional[str]:
@@ -786,6 +990,11 @@ def validate_plugin_repo(
     errors.extend(sec_errors)
     warnings.extend(sec_warnings)
 
+    # CVE scan for dependencies
+    cve_errors, cve_warnings = scan_dependencies_for_cves(repo_path, tier)
+    errors.extend(cve_errors)
+    warnings.extend(cve_warnings)
+
     # Consistency check
     if manifest_data:
         consistency_errors = check_consistency(tier, manifest_data, network_detected, detected_domains)
@@ -926,6 +1135,7 @@ def main() -> int:
         print("   - Network (community): Declare all domains in capabilities.network.domains")
         print("   - Telemetry: Remove all analytics/tracking code (not allowed in any tier)")
         print("   - Consistency: Ensure manifest matches actual code behavior")
+        print("   - CVE: Update vulnerable dependencies to patched versions")
 
     return 1 if failed else 0
 

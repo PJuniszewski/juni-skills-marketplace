@@ -2,6 +2,25 @@
 
 We welcome community plugin contributions! This document explains how to submit your plugin.
 
+## Quick Start with Scaffold Tool
+
+The fastest way to create a new plugin:
+
+```bash
+# Basic curated plugin
+python scripts/scaffold-plugin.py --name my-plugin
+
+# Community plugin with network access
+python scripts/scaffold-plugin.py --name my-api-plugin --tier community
+
+# Include hooks and agents
+python scripts/scaffold-plugin.py --name my-plugin --with-hooks --with-agents
+```
+
+This generates a complete plugin structure with all required files.
+
+---
+
 ## Choose Your Tier
 
 Before submitting, decide which tier fits your plugin:
@@ -218,6 +237,22 @@ All checks are enforced at PR validation time:
 | Undeclared domains | N/A | HARD FAIL |
 
 **Malicious plugins will be removed and authors banned.**
+
+### Dependency CVE Scanning
+
+If your plugin includes dependencies (`requirements.txt`, `package.json`), they are scanned for known vulnerabilities:
+
+| Severity | Curated | Community |
+|----------|---------|-----------|
+| CRITICAL | HARD FAIL | HARD FAIL |
+| HIGH | HARD FAIL | WARNING |
+| MEDIUM | WARNING | WARNING |
+| LOW | INFO | INFO |
+
+**To pass validation:**
+- Update vulnerable dependencies to patched versions
+- Remove unused dependencies
+- Pin to specific versions without known CVEs
 
 ---
 

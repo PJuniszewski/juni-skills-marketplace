@@ -26,6 +26,9 @@ jobs:
       - name: Run validator tests
         run: python scripts/test_validator.py
 
+      - name: Run scaffold tests
+        run: python scripts/test_scaffold.py
+
       - name: Validate plugins
         run: python scripts/validate-plugins.py
 
