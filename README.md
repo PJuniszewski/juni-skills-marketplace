@@ -12,7 +12,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Curated-Security%20First-7c3aed" alt="Curated">
   <img src="https://img.shields.io/badge/Community-Allowlist%20Network-blue" alt="Community">
-  <img src="https://img.shields.io/badge/Version-3.0.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/Version-3.1.0-blue" alt="Version">
 </p>
 
 <!-- TRUST & SECURITY -->
