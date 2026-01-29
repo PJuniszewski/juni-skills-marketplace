@@ -12,7 +12,7 @@
 <p align="center">
   <img src="https://img.shields.io/badge/Curated-Security%20First-7c3aed" alt="Curated">
   <img src="https://img.shields.io/badge/Community-Allowlist%20Network-blue" alt="Community">
-  <img src="https://img.shields.io/badge/Version-3.1.0-blue" alt="Version">
+  <img src="https://img.shields.io/badge/Version-3.2.0-blue" alt="Version">
 </p>
 
 <!-- TRUST & SECURITY -->
@@ -85,10 +85,10 @@ This marketplace uses an **A+B tier strategy**:
 
 Security-first plugins with no network access. See [CATALOG.md](CATALOG.md) for details.
 
-| Plugin | Description | Version |
-|--------|-------------|---------|
-| **juni** | Juni Skills Suite - /juni:cook (workflows), /juni:sous-chef, /juni:cook-menu | v2.1.0 |
-| **context-guard** | LLM Epistemic Safety Layer - /guard (context integrity guardrails) | v1.0.0-beta |
+| Plugin | Description |
+|--------|-------------|
+| **juni** | Juni Skills Suite - /juni:cook (workflows), /juni:sous-chef, /juni:cook-menu, /juni:inspect |
+| **context-guard** | LLM Epistemic Safety Layer - /guard (context integrity guardrails) |
 
 ## Community Plugins
 
