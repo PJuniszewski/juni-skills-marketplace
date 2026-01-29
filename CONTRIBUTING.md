@@ -130,9 +130,11 @@ Edit `.claude-plugin/marketplace.json` and add your plugin:
 ```json
 {
   "name": "your-plugin-name",
+  "category": "community",
   "tier": "community",
   "description": "Brief description (one sentence)",
   "source": {
+    "source": "url",
     "type": "git",
     "url": "https://github.com/YourUsername/your-plugin.git"
   },
@@ -141,7 +143,9 @@ Edit `.claude-plugin/marketplace.json` and add your plugin:
 ```
 
 **Important:**
-- Use `"tier": "curated"` or `"tier": "community"`
+- Include **both** `category` and `tier` fields (Claude Code uses `category`, security model uses `tier`)
+- Include **both** `source.source` and `source.type` fields (same reason)
+- Use `"official"` or `"community"` for `category`; `"curated"` or `"community"` for `tier`
 - Plugin name must be lowercase with hyphens
 - Description should be concise
 
