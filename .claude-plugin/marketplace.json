@@ -1,7 +1,7 @@
 {
   "name": "juni-skills",
   "description": "Curated Claude Code plugins for professional development workflows. Security-first marketplace with tiered policies.",
-  "version": "3.1.0",
+  "version": "3.2.0",
   "owner": {
     "name": "PJuniszewski"
   },
@@ -9,7 +9,7 @@
     {
       "name": "juni",
       "category": "official",
-      "description": "Juni Skills Suite - /juni:cook (feature workflows with Tasks API progress tracking), /juni:sous-chef, /juni:cook-menu, /juni:cook-stats.",
+      "description": "Juni Skills Suite - /juni:cook (feature workflows with Tasks API progress tracking), /juni:sous-chef, /juni:cook-menu, /juni:cook-stats, /juni:inspect (post-implementation code review).",
       "source": {
         "source": "url",
         "url": "https://github.com/PJuniszewski/cook.git"
