@@ -141,9 +141,12 @@ Edit `.claude-plugin/marketplace.json` and add your plugin:
 ```
 
 **Important:**
-- Use `"official"` or `"community"` for `category`
+- Use `"official"` for Curated Tier (no network code allowed)
+- Use `"community"` for Community Tier (network via allowlist)
 - Plugin name must be lowercase with hyphens
 - Description should be concise
+
+> **Note:** The marketplace uses `category` field for Claude Code compatibility. The validator maps `"official"` → curated tier, `"community"` → community tier.
 
 ### 3. Run the Validator Locally
 

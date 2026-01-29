@@ -43,7 +43,7 @@
       "description": "List of plugins in this marketplace",
       "items": {
         "type": "object",
-        "required": ["name", "tier", "description", "source"],
+        "required": ["name", "category", "description", "source"],
         "additionalProperties": false,
         "properties": {
           "name": {
@@ -53,10 +53,10 @@
             "maxLength": 64,
             "description": "Plugin name (lowercase, hyphenated)"
           },
-          "tier": {
+          "category": {
             "type": "string",
-            "enum": ["curated", "community"],
-            "description": "Plugin tier: curated (security-first, no network) or community (network via allowlist)"
+            "enum": ["official", "community"],
+            "description": "Plugin category: 'official' (curated tier, no network) or 'community' (network via allowlist)"
           },
           "description": {
             "type": "string",
@@ -66,13 +66,13 @@
           },
           "source": {
             "type": "object",
-            "required": ["type", "url"],
+            "required": ["source", "url"],
             "additionalProperties": false,
             "properties": {
-              "type": {
+              "source": {
                 "type": "string",
-                "enum": ["git"],
-                "description": "Source type"
+                "enum": ["url"],
+                "description": "Source type (always 'url' for Claude Code compatibility)"
               },
               "url": {
                 "type": "string",
